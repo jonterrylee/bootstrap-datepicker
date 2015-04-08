@@ -1084,7 +1084,6 @@
       var target = $(e.target).closest('span, td, th, div'),
         year, month, day;
       if (target.length === 1){
-        console.log("target clicked", target[0])
         switch (target[0].nodeName.toLowerCase()){
           case 'th':
             switch (target[0].className){
