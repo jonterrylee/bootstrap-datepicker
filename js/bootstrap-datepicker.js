@@ -95,7 +95,7 @@
     this.viewDate = this.o.defaultViewDate;
     this.focusDate = null;
 
-    this.disabledMonths = [];
+    this.monthsWithEvents = [];
 
     this.element = $(element);
     this.isInline = false;
@@ -829,7 +829,8 @@
       var html = '',
         i = 0;
       while (i < 12){
-        html += '<span class="month ' + (i+1) + '">'+dates[this.o.language].monthsShort[i++]+'</span>';
+        disabled = (this.monthsWithEvents[i]) ? "" : "disabled"
+        html += '<span class="month ' + (i+1) + " " + disabled + '">'+dates[this.o.language].monthsShort[i++]+'</span>';
       }
       this.picker.find('.datepicker-months .ptsMonths td').html(html);
     },
@@ -1495,10 +1496,11 @@
     },
 
     resetDisabledMonths: function(data) {
-      this.disabledMonths = data
+      this.monthsWithEvents = data
       this.picker.find('.month.disabled').removeClass('disabled')
-      for (var i in data) {
-        this.picker.find('.month.' + data[i]).addClass('disabled')
+      for (var i = 0; i < 12; i++) {
+        if (!data[i])
+          this.picker.find('.month.' + (i+1)).addClass('disabled')
       }
     }
   };
