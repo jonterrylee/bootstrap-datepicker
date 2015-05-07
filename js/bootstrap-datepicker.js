@@ -96,6 +96,7 @@
     this.focusDate = null;
 
     this.monthsWithEvents = [1,2,3,4,5,6,7,8,9,10,11,12];
+    this.selectedNonMonthlyEvents = {};
 
     this.element = $(element);
     this.isInline = false;
@@ -589,6 +590,37 @@
       this.update.apply(this, args);
       this._trigger('changeDate');
       this.setValue();
+      return this;
+    },
+
+    setSelectedEvents: function(){
+      var args = $.isArray(arguments[0]) ? arguments[0] : arguments;
+      for (index in args) {
+        var event = args[index]
+        this.selectedNonMonthlyEvents = {}
+        this.selectedNonMonthlyEvents[event.EventId] = event.EventName;
+      }
+
+      return this;
+    },
+
+    clearSelectedEvents: function() {
+      this.selectedNonMonthlyEvents = {};
+      this.picker.find('.ptsEvent').removeClass('active')
+      return this;
+    },
+
+    renderEvents: function() {
+      var specialEvents = arguments[0]
+      var html = '<td colspan="7">';
+      for (var _i = 0; _i < specialEvents.length; _i++){
+        var tempEvent = specialEvents[_i];
+        var selectedClass = this.selectedNonMonthlyEvents.hasOwnProperty(tempEvent.EventId) ? "active" : ""
+        html += '<div class="ptsEvent ' + selectedClass + '" data-eventId="'+ tempEvent.EventId +'">'+ tempEvent.EventName +'</div>';
+      }
+      html += '</td>'
+      this.picker.find('.datepicker-months .ptsEvents').html(html);
+
       return this;
     },
 
@@ -1120,13 +1152,7 @@
                       return event.EventDesc != "Monthly";
                     })
 
-                    var html = '<td colspan="7">';
-                    for (var _i = 0; _i < specialEvents.length; _i++){
-                      var tempEvent = specialEvents[_i];
-                      html += '<div class="ptsEvent" data-eventId="'+ tempEvent.EventId +'">'+ tempEvent.EventName +'</div>';
-                    }
-                    html += '</td>'
-                    this.picker.find('.datepicker-months .ptsEvents').html(html);
+                    this.renderEvents(specialEvents)
 
                     break;
                 }
@@ -1157,13 +1183,7 @@
                   return event.EventDesc != "Monthly";
                 })
 
-                var html = '<td colspan="7">';
-                for (var _i = 0; _i < specialEvents.length; _i++){
-                  var tempEvent = specialEvents[_i];
-                  html += '<div class="ptsEvent" data-eventId="'+ tempEvent.EventId +'">'+ tempEvent.EventName +'</div>';
-                }
-                html += '</td>'
-                this.picker.find('.datepicker-months .ptsEvents').html(html);
+                this.renderEvents(specialEvents)
 
                 break;
               case 'switchMonths':
@@ -1181,8 +1201,27 @@
             if (target.hasClass('ptsEvent')) {
               var elem = $(this.element).closest('[ng-controller]')
               var controller = angular.element(elem).controller()
-              controller.setEventById($(target).data('eventid'))
-              this.hide()
+              var eventId = $(target).data('eventid')
+              var eventName = $(target).html()
+
+              if (!this.o.multidate) {
+                controller.setEventById($(target).data('eventid'))
+                this.selectedNonMonthlyEvents = {}
+                this.selectedNonMonthlyEvents[eventId] = eventName
+                target.parent().find('.ptsEvent').removeClass('active')
+                target.addClass('active')
+                this.hide()
+              }
+              else if (!this.selectedNonMonthlyEvents.hasOwnProperty(eventId)) {
+                target.addClass('active')
+                controller.setEventById($(target).data('eventid'))
+                this.selectedNonMonthlyEvents[eventId] = eventName
+              }
+              else {
+                target.removeClass('active')
+                delete this.selectedNonMonthlyEvents[eventId]
+                controller.removeEventById(eventId)
+              }
             }
             break;
           case 'span':
