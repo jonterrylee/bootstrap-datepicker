@@ -97,6 +97,7 @@
 
     this.monthsWithEvents = [1,2,3,4,5,6,7,8,9,10,11,12];
     this.selectedNonMonthlyEvents = {};
+    this.nonMonthlyEvents = [];
 
     this.element = $(element);
     this.isInline = false;
@@ -595,9 +596,10 @@
 
     setSelectedEvents: function(){
       var args = $.isArray(arguments[0]) ? arguments[0] : arguments;
+      this.selectedNonMonthlyEvents = {}
+
       for (index in args) {
         var event = args[index]
-        this.selectedNonMonthlyEvents = {}
         this.selectedNonMonthlyEvents[event.EventId] = event.EventName;
       }
 
@@ -610,8 +612,14 @@
       return this;
     },
 
+    setNonMonthlyEvents: function() {
+      this.nonMonthlyEvents = arguments[0];
+    },
+
     renderEvents: function() {
-      var specialEvents = arguments[0]
+      var specialEvents = arguments[0];
+      this.nonMonthlyEvents = specialEvents
+
       var html = '<td colspan="7">';
       for (var _i = 0; _i < specialEvents.length; _i++){
         var tempEvent = specialEvents[_i];
@@ -1148,6 +1156,7 @@
 
                     var elem = $(this.element).closest('[ng-controller]')
                     var controller = angular.element(elem).controller()
+
                     var specialEvents = _.filter(controller.events, function(event) {
                       return event.EventDesc != "Monthly";
                     })
@@ -1179,11 +1188,12 @@
 
                 var elem = $(this.element).closest('[ng-controller]')
                 var controller = angular.element(elem).controller()
+
                 var specialEvents = _.filter(controller.events, function(event) {
-                  return event.EventDesc != "Monthly";
+                  return !event.Monthly;
                 })
 
-                this.renderEvents(specialEvents)
+                this.renderEvents(specialEvents);
 
                 break;
               case 'switchMonths':
@@ -1204,7 +1214,7 @@
               var eventId = $(target).data('eventid')
               var eventName = $(target).html()
 
-              if (!this.o.multidate) {
+              if (!this.o.multievent) {
                 controller.setEventById($(target).data('eventid'))
                 this.selectedNonMonthlyEvents = {}
                 this.selectedNonMonthlyEvents[eventId] = eventName
