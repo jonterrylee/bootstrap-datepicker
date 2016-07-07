@@ -1221,6 +1221,17 @@
             if (target.hasClass('ptsEvent')) {
               var elem = $(this.element).closest('[ng-controller]')
               var controller = angular.element(elem).controller()
+
+              if (controller === undefined) {
+                elem = elem.context;
+
+                while (elem.parentElement !== undefined && controller == undefined) {
+                  elem = elem.parentElement;
+                  controller = angular.element(elem).controller()
+                }
+
+              }
+
               var eventId = $(target).data('eventid')
               var eventName = $(target).html()
 
