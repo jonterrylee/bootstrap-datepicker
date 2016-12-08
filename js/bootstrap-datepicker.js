@@ -620,13 +620,13 @@
       var specialEvents = arguments[0];
       this.nonMonthlyEvents = specialEvents
 
-      var html = '<td colspan="7"><div class="eventsPicker">';
+      var html = '<td colspan="7">';
       for (var _i = 0; _i < specialEvents.length; _i++){
         var tempEvent = specialEvents[_i];
         var selectedClass = this.selectedNonMonthlyEvents.hasOwnProperty(tempEvent.EventId) ? "active" : ""
         html += '<div class="ptsEvent ' + selectedClass + '" data-eventId="'+ tempEvent.EventId +'">'+ tempEvent.EventName +'</div>';
       }
-      html += '</div></td>'
+      html += '</td>'
       this.picker.find('.datepicker-months .ptsEvents').html(html);
 
       return this;
@@ -855,7 +855,7 @@
           .attr('colspan', function(i, val){
             return parseInt(val) + 1;
           });
-        var cell = '<th class="cw"> </th>';
+        var cell = '<th class="cw">&#160;</th>';
         html += cell;
       }
       while (dowCnt < this.o.weekStart + 7){
@@ -1942,9 +1942,9 @@
     },
     headTemplate: '<thead>'+
     '<tr>'+
-    '<th class="prev">«</th>'+
+    '<th class="prev">&#171;</th>'+
     '<th colspan="5" class="datepicker-switch"></th>'+
-    '<th class="next">»</th>'+
+    '<th class="next">&#187;</th>'+
     '</tr>'+
     '</thead>',
     contTemplate: '<tbody><tr class="ptsMonths"><td colspan="7"></td></tr><tr class="ptsEvents"></tr></tbody>',
