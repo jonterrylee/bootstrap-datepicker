@@ -620,13 +620,13 @@
       var specialEvents = arguments[0];
       this.nonMonthlyEvents = specialEvents
 
-      var html = '<td colspan="7">';
+      var html = '<td colspan="7"><div class="eventsPicker">';
       for (var _i = 0; _i < specialEvents.length; _i++){
         var tempEvent = specialEvents[_i];
         var selectedClass = this.selectedNonMonthlyEvents.hasOwnProperty(tempEvent.EventId) ? "active" : ""
         html += '<div class="ptsEvent ' + selectedClass + '" data-eventId="'+ tempEvent.EventId +'">'+ tempEvent.EventName +'</div>';
       }
-      html += '</td>'
+      html += '</div></td>'
       this.picker.find('.datepicker-months .ptsEvents').html(html);
 
       return this;
@@ -1167,7 +1167,7 @@
 
                     }
 
-                    var specialEvents = _.filter(controller.events, function(event) {                      
+                    var specialEvents = _.filter(controller.events, function(event) {
                       return event.Monthly;
                     })
 
