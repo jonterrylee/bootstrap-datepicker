@@ -79,7 +79,9 @@
     this.viewDate = this.o.defaultViewDate;
     this.focusDate = null;
 
-    this.monthsWithEvents = [];
+    this.monthsWithEvents = [1,2,3,4,5,6,7,8,9,10,11,12];
+    this.selectedNonMonthlyEvents = {};
+    this.nonMonthlyEvents = [];
 
     this.element = $(element);
     this.isInline = false;
@@ -573,6 +575,44 @@
       this.update.apply(this, args);
       this._trigger('changeDate');
       this.setValue();
+      return this;
+    },
+
+    setSelectedEvents: function(){
+      var args = $.isArray(arguments[0]) ? arguments[0] : arguments;
+      this.selectedNonMonthlyEvents = {}
+
+      for (index in args) {
+        var event = args[index]
+        this.selectedNonMonthlyEvents[event.EventId] = event.EventName;
+      }
+
+      return this;
+    },
+
+    clearSelectedEvents: function() {
+      this.selectedNonMonthlyEvents = {};
+      this.picker.find('.ptsEvent').removeClass('active')
+      return this;
+    },
+
+    setNonMonthlyEvents: function() {
+      this.nonMonthlyEvents = arguments[0];
+    },
+
+    renderEvents: function() {
+      var specialEvents = arguments[0];
+      this.nonMonthlyEvents = specialEvents
+
+      var html = '<td colspan="7"><div class="ptsEventsPicker">';
+      for (var _i = 0; _i < specialEvents.length; _i++){
+        var tempEvent = specialEvents[_i];
+        var selectedClass = this.selectedNonMonthlyEvents.hasOwnProperty(tempEvent.EventId) ? "active" : ""
+        html += '<div class="ptsEvent ' + selectedClass + '" data-eventId="'+ tempEvent.EventId +'">'+ tempEvent.EventName +'</div>';
+      }
+      html += '</div></td>'
+      this.picker.find('.datepicker-months .ptsEvents').html(html);
+
       return this;
     },
 
@@ -1100,17 +1140,22 @@
 
                     var elem = $(this.element).closest('[ng-controller]')
                     var controller = angular.element(elem).controller()
+
+                    if (controller === undefined) {
+                      elem = elem.context;
+
+                      while (elem.parentElement !== undefined && controller == undefined) {
+                        elem = elem.parentElement;
+                        controller = angular.element(elem).controller()
+                      }
+
+                    }
+
                     var specialEvents = _.filter(controller.events, function(event) {
-                      return event.EventDesc != "Monthly";
+                      return event.Monthly;
                     })
 
-                    var html = '<td colspan="7">';
-                    for (var _i = 0; _i < specialEvents.length; _i++){
-                      var tempEvent = specialEvents[_i];
-                      html += '<div class="ptsEvent" data-eventId="'+ tempEvent.EventId +'">'+ tempEvent.EventName +'</div>';
-                    }
-                    html += '</td>'
-                    this.picker.find('.datepicker-months .ptsEvents').html(html);
+                    this.renderEvents(specialEvents)
 
                     break;
                 }
@@ -1137,17 +1182,12 @@
 
                 var elem = $(this.element).closest('[ng-controller]')
                 var controller = angular.element(elem).controller()
+
                 var specialEvents = _.filter(controller.events, function(event) {
-                  return event.EventDesc != "Monthly";
+                  return !event.Monthly;
                 })
 
-                var html = '<td colspan="7">';
-                for (var _i = 0; _i < specialEvents.length; _i++){
-                  var tempEvent = specialEvents[_i];
-                  html += '<div class="ptsEvent" data-eventId="'+ tempEvent.EventId +'">'+ tempEvent.EventName +'</div>';
-                }
-                html += '</td>'
-                this.picker.find('.datepicker-months .ptsEvents').html(html);
+                this.renderEvents(specialEvents);
 
                 break;
               case 'switchMonths':
@@ -1165,8 +1205,38 @@
             if (target.hasClass('ptsEvent')) {
               var elem = $(this.element).closest('[ng-controller]')
               var controller = angular.element(elem).controller()
-              controller.setEventById($(target).data('eventid'))
-              this.hide()
+
+              if (controller === undefined) {
+                elem = elem.context;
+
+                while (elem.parentElement !== undefined && controller == undefined) {
+                  elem = elem.parentElement;
+                  controller = angular.element(elem).controller()
+                }
+
+              }
+
+              var eventId = $(target).data('eventid')
+              var eventName = $(target).html()
+
+              if (!this.o.multievent) {
+                controller.setEventById($(target).data('eventid'))
+                this.selectedNonMonthlyEvents = {}
+                this.selectedNonMonthlyEvents[eventId] = eventName
+                target.parent().find('.ptsEvent').removeClass('active')
+                target.addClass('active')
+                this.hide()
+              }
+              else if (!this.selectedNonMonthlyEvents.hasOwnProperty(eventId)) {
+                target.addClass('active')
+                controller.setEventById($(target).data('eventid'))
+                this.selectedNonMonthlyEvents[eventId] = eventName
+              }
+              else {
+                target.removeClass('active')
+                delete this.selectedNonMonthlyEvents[eventId]
+                controller.removeEventById(eventId)
+              }
             }
             break;
           case 'span':
