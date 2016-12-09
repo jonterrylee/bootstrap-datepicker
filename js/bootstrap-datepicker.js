@@ -620,7 +620,7 @@
       var specialEvents = arguments[0];
       this.nonMonthlyEvents = specialEvents
 
-      var html = '<td colspan="7"><div class="eventsPicker">';
+      var html = '<td colspan="7"><div class="ptsEventsPicker">';
       for (var _i = 0; _i < specialEvents.length; _i++){
         var tempEvent = specialEvents[_i];
         var selectedClass = this.selectedNonMonthlyEvents.hasOwnProperty(tempEvent.EventId) ? "active" : ""

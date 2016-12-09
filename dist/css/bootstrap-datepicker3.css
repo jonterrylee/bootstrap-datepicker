@@ -21,6 +21,7 @@
 .datepicker-dropdown {
   top: 0;
   left: 0;
+  padding: 4px;
 }
 .datepicker-dropdown:before {
   content: '';
@@ -112,6 +113,10 @@
   background: none;
   color: #999999;
   cursor: default;
+}
+.datepicker table tr td.highlighted {
+  background: #d9edf7;
+  border-radius: 0;
 }
 .datepicker table tr td.today,
 .datepicker table tr td.today:hover,
@@ -748,4 +753,10 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.active {
   border-width: 1px 0;
   margin-left: -5px;
   margin-right: -5px;
+}
+.ptsEventsPicker {
+  overflow-y: scroll;
+  max-height: 300px;
+  margin-right: -9px;
+  padding-right: 9px;
 }
