@@ -757,4 +757,6 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.active {
 .ptsEventsPicker {
   overflow-y: scroll;
   max-height: 300px;
+  margin-right: -9px;
+  padding-right: 9px;
 }
