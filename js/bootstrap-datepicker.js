@@ -954,7 +954,7 @@
         .text(cleartxt)
         .toggle(this.o.clearBtn !== false);
       this.picker.find('tfoot .switchEvents')
-        .toggle(this.o.mode != 'Events');
+        .toggle(this.o.mode != 'Events' && this.o.showEvents != false);
       this.picker.find('tfoot .switchMonths')
         .toggle(this.o.mode != 'Months');
       this.picker.find('.ptsEvents')
